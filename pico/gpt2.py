@@ -8,9 +8,10 @@ def softmax(x):
     return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
 
 def layer_norm(x, g, b, eps: float = 1e-5):
+    # normalize x to have mean=0 and var=1 over last axis
     mean = np.mean(x, axis=-1, keepdims=True)
     variance = np.var(x, axis=-1, keepdims=True)
-    x = (x - mean) / np.sqrt(variance + eps)  # normalize x to have mean=0 and var=1 over last axis
+    x = (x - mean) / np.sqrt(variance + eps)  
     return g * x + b  # scale and offset with gamma/beta params
 
 def linear(x, w, b):  # [m, in], [in, out], [out] -> [m, out]
