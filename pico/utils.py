@@ -7,7 +7,7 @@ import requests
 import tensorflow as tf
 from tqdm import tqdm
 
-from tokenizer import get_tokenizer
+from .tokenizer import get_tokenizer
 
 
 def download_gpt2_files(model_size, model_dir):

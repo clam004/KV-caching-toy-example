@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 #### Usage
 ```bash
-python gpt2.py "Alan Turing theorized that computers would one day become"
+python pico/gpt2.py "Alan Turing theorized that computers would one day become"
 ```
 
 Which generates

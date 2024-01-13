@@ -20,7 +20,7 @@ venv.bak/
 .DS_Store
 
 ### Project ###
-/models/
+**/models/
 
 ### Python ###
 
