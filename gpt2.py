@@ -1,14 +1,11 @@
 import numpy as np
 
-
 def gelu(x):
     return 0.5 * x * (1 + np.tanh(np.sqrt(2 / np.pi) * (x + 0.044715 * x**3)))
-
 
 def softmax(x):
     exp_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
     return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
-
 
 def layer_norm(x, g, b, eps: float = 1e-5):
     mean = np.mean(x, axis=-1, keepdims=True)
@@ -16,24 +13,18 @@ def layer_norm(x, g, b, eps: float = 1e-5):
     x = (x - mean) / np.sqrt(variance + eps)  # normalize x to have mean=0 and var=1 over last axis
     return g * x + b  # scale and offset with gamma/beta params
 
-
 def linear(x, w, b):  # [m, in], [in, out], [out] -> [m, out]
     return x @ w + b
-
 
 def ffn(x, c_fc, c_proj):  # [n_seq, n_embd] -> [n_seq, n_embd]
     # project up
     a = gelu(linear(x, **c_fc))  # [n_seq, n_embd] -> [n_seq, 4*n_embd]
-
     # project back down
     x = linear(a, **c_proj)  # [n_seq, 4*n_embd] -> [n_seq, n_embd]
-
     return x
-
 
 def attention(q, k, v, mask):  # [n_q, d_k], [n_k, d_k], [n_k, d_v], [n_q, n_k] -> [n_q, d_v]
     return softmax(q @ k.T / np.sqrt(q.shape[-1]) + mask) @ v
-
 
 def mha(x, c_attn, c_proj, n_head):  # [n_seq, n_embd] -> [n_seq, n_embd]
     # qkv projection
@@ -95,6 +86,7 @@ def generate(inputs, params, n_head, n_tokens_to_generate):
 
 
 def main(prompt: str, n_tokens_to_generate: int = 40, model_size: str = "124M", models_dir: str = "models"):
+    
     from utils import load_encoder_hparams_and_params
 
     # load encoder, hparams, and params from the released open-ai gpt-2 files
