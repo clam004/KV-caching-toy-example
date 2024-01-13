@@ -7,7 +7,7 @@ import requests
 import tensorflow as tf
 from tqdm import tqdm
 
-from encoder import get_encoder
+from tokenizer import get_tokenizer
 
 
 def download_gpt2_files(model_size, model_dir):
@@ -75,8 +75,8 @@ def load_encoder_hparams_and_params(model_size, models_dir):
         download_gpt2_files(model_size, model_dir)
         tf_ckpt_path = tf.train.latest_checkpoint(model_dir)
 
-    encoder = get_encoder(model_size, models_dir)
+    tokenizer = get_tokenizer(model_size, models_dir)
     hparams = json.load(open(os.path.join(model_dir, "hparams.json")))
     params = load_gpt2_params_from_tf_ckpt(tf_ckpt_path, hparams)
 
-    return encoder, hparams, params
+    return tokenizer, hparams, params

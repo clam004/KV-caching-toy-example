@@ -44,7 +44,7 @@ def get_pairs(word):
     return pairs
 
 
-class Encoder:
+class Tokenizer:
     def __init__(self, encoder, bpe_merges, errors="replace"):
         self.encoder = encoder
         self.decoder = {v: k for k, v in self.encoder.items()}
@@ -111,10 +111,10 @@ class Encoder:
         return text
 
 
-def get_encoder(model_name, models_dir):
+def get_tokenizer(model_name, models_dir):
     with open(os.path.join(models_dir, model_name, "encoder.json"), "r") as f:
         encoder = json.load(f)
     with open(os.path.join(models_dir, model_name, "vocab.bpe"), "r", encoding="utf-8") as f:
         bpe_data = f.read()
     bpe_merges = [tuple(merge_str.split()) for merge_str in bpe_data.split("\n")[1:-1]]
-    return Encoder(encoder=encoder, bpe_merges=bpe_merges)
+    return Tokenizer(encoder=encoder, bpe_merges=bpe_merges)
