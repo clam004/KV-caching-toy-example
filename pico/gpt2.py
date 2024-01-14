@@ -1,5 +1,9 @@
 import numpy as np
 
+from tqdm import tqdm
+
+seq_len = 0
+
 def gelu(x):
     return 0.5 * x * (1 + np.tanh(np.sqrt(2 / np.pi) * (x + 0.044715 * x**3)))
 
@@ -24,8 +28,20 @@ def ffn(x, c_fc, c_proj):  # [n_seq, n_embd] -> [n_seq, n_embd]
     x = linear(a, **c_proj)  # [n_seq, 4*n_embd] -> [n_seq, n_embd]
     return x
 
-def attention(q, k, v, mask):  # [n_q, d_k], [n_k, d_k], [n_k, d_v], [n_q, n_k] -> [n_q, d_v]
-    return softmax(q @ k.T / np.sqrt(q.shape[-1]) + mask) @ v
+# Q, K, V -> A
+def attention(Q, K, V, mask, verbose = False): 
+    
+    # [n_seq_q, n_embd], [n_seq_k, n_embd], [n_seq_k, n_embd], [n_seq_q, n_seq_k] -> [n_seq_q, n_embd]
+    QK_T = Q @ K.T
+
+    global seq_len
+    if QK_T.shape[0] > seq_len:
+        print("QK_T.shape", QK_T.shape)
+        seq_len = QK_T.shape[0]
+
+    A = softmax(QK_T / np.sqrt(Q.shape[-1]) + mask) @ V
+    
+    return A
 
 def mha(x, c_attn, c_proj, n_head):  # [n_seq, n_embd] -> [n_seq, n_embd]
     # qkv projection
@@ -53,6 +69,7 @@ def mha(x, c_attn, c_proj, n_head):  # [n_seq, n_embd] -> [n_seq, n_embd]
 
 
 def transformer_block(x, mlp, attn, ln_1, ln_2, n_head):  # [n_seq, n_embd] -> [n_seq, n_embd]
+
     # multi-head causal self attention
     x = x + mha(layer_norm(x, **ln_1), **attn, n_head=n_head)  # [n_seq, n_embd] -> [n_seq, n_embd]
 
@@ -76,8 +93,7 @@ def gpt2(inputs, wte, wpe, blocks, ln_f, n_head):  # [n_seq] -> [n_seq, n_vocab]
 
 
 def generate(inputs, params, n_head, n_tokens_to_generate):
-    from tqdm import tqdm
-
+    
     for _ in tqdm(range(n_tokens_to_generate), "generating"):  # auto-regressive decode loop
         logits = gpt2(inputs, **params, n_head=n_head)  # model forward pass
         next_id = np.argmax(logits[-1])  # greedy sampling
