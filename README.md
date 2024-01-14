@@ -2,6 +2,8 @@
 
 A minimal toy example of the KV-cache used to speed up large language model transformers using only numpy, composed from an edited version of https://github.com/jaymody/picoGPT/pull/7 with moving diagrams from https://medium.com/@joaolages/kv-caching-explained-276520203249 alongside code annotations
 
+<img src="samples/KV_cache.gif">
+
 #### Dependencies
 ```bash
 python3 -m venv venv
